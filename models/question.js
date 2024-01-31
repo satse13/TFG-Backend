@@ -6,6 +6,7 @@ const questionSchema = new mongoose.Schema({
 	diff: Number,
 	description: String,
 	startsWith: String,
+	Idioma: String
 })
 
 questionSchema.set('toJSON', { 

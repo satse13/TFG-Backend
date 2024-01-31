@@ -2,7 +2,7 @@ const questionRouter = require('express').Router()
 const Question = require('../models/question')
 
 
-const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z']
+const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z']
 
 
 // Habria que añadir api keys para que no cualquiera pueda acceder a la api
@@ -18,14 +18,15 @@ questionRouter.get('/local',async (request, response) => {
 	for (const letter of letters) {
 		// Realiza una consulta para obtener dos preguntas aleatorias con la letra actual
 		const questions = await Question.aggregate([
-			{ $match: { letter } },
+			{ $match: { $and: [ { letter }, { Idioma: "Eng" } ]}},
 			{ $sample: { size: 2 } }
-		])
+		  ]);
 
 		// Agrega las preguntas aleatorias al objeto de resultado
 		result[letter] = questions
 	}
-
+	
+	console.log(result)
 	response.json(result)
 })
 
