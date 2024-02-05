@@ -1,0 +1,3 @@
+-Eliminar array y usar uno que venga de parámetros para el post
+-Eliminar la conexión a la base de datos (ya esta conectado)
+-Mover el codigo de ChatGPTAPI
