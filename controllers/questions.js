@@ -52,7 +52,7 @@ questionRouter.get('/generate', async (request, response) =>{
 	response.json(question)
 })
 
-questionRouter.put('/questions', async (request, response) => {
+questionRouter.post('/questions', async (request, response) => {
 	await mongoose.connect(dbURI)
 	console.log('Connected to the database')
 
