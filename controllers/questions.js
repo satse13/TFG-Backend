@@ -51,16 +51,15 @@ questionRouter.get('/generate', async (request, response) =>{
 	response.json(question)
 })
 
-questionRouter.put('/questions', async (request, response) => {
-	const questions = request.query.questions
+questionRouter.post('/questions', async (request, response) => {
+	const questions = request.body
 	let added = []
 	for(const key in questions){
-		console.log(questions[key])
 		const repeatedQuestion = await Question.findOne({word: questions[key].word})
-		console.log(repeatedQuestion)
-		if(repeatedQuestion != null){
+		if(repeatedQuestion == null){
 			questions[key].save()
 				.then(() => {
+					console.log('Elemento añadido')
 					added.push('Y')
 				})
 				.catch((err) => {
