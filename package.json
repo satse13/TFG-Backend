@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type" : "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
@@ -21,7 +22,8 @@
     "express-async-errors": "^3.1.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
-    "mongoose-unique-validator": "^4.0.0"
+    "mongoose-unique-validator": "^4.0.0",
+    "openai": "^4.26.0"
   },
   "devDependencies": {
     "eslint": "^8.51.0",
