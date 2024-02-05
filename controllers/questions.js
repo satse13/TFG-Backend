@@ -57,15 +57,21 @@ questionRouter.post('/questions', async (request, response) => {
 	for(const key in questions){
 		const repeatedQuestion = await Question.findOne({word: questions[key].word})
 		if(repeatedQuestion == null){
-			questions[key].save()
-				.then(() => {
-					console.log('Elemento añadido')
-					added.push('Y')
-				})
-				.catch((err) => {
-					console.error('Error al añadir elemento:', err)
-					added.push('E')
-				})
+            const newQuestion = new Question({
+                letter: questions[key].letter,
+                word: questions[key].word,
+                description: questions[key].description,
+                startsWith: questions[key].startsWith,
+                Idioma: 'Eng'
+            });
+            newQuestion.save()
+            .then(() => {
+                console.log('Elemento añadido a la base de datos');
+            })
+            .catch((err) => {
+                console.error('Error al añadir elemento:', err);
+            });
+			added.push('Y')
 		}
 		else{
 			console.log('Elemento repetido y no añadido')
