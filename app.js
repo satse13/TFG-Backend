@@ -1,12 +1,12 @@
-const config = require('./utils/config')
-const express = require('express')
-require('express-async-errors')
-const app = express()
-const cors = require('cors')
-const middleware = require('./utils/middleware')
-const logger = require('./utils/logger')
-const mongoose = require('mongoose')
-const questionRouter = require('./controllers/questions')
+import config from './utils/config.js';
+import express from 'express';
+import 'express-async-errors';
+const app = express();
+import cors from 'cors';
+import middleware from './utils/middleware.js';
+import logger from './utils/logger.js';
+import mongoose from 'mongoose';
+import questionRouter from './controllers/questions.js';
 
 
 mongoose.set('strictQuery', false)
@@ -33,4 +33,4 @@ app.use('/api/questions',questionRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
-module.exports = app
+export default app

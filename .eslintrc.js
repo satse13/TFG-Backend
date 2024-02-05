@@ -4,6 +4,11 @@ module.exports = {
 		'commonjs': true,
 		'es2021': true
 	},
+	'parser': 'babel-eslint',
+	'parserOptions': {
+	  'sourceType': 'module',
+	  'allowImportExportEverywhere': true
+	},
 	'extends': 'eslint:recommended',
 	'overrides': [
 		{

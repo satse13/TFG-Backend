@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const questionSchema = new mongoose.Schema({
 	letter: String,
@@ -17,4 +17,4 @@ questionSchema.set('toJSON', {
 	}
 })
 
-module.exports = mongoose.model('Question', questionSchema)
+export default mongoose.model('Question', questionSchema)
