@@ -8,7 +8,6 @@ import logger from './utils/logger.js';
 import mongoose from 'mongoose';
 import questionRouter from './controllers/questions.js';
 
-
 mongoose.set('strictQuery', false)
 
 logger.info('connecting to', config.MONGODB_URI)
