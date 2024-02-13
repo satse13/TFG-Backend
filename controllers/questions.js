@@ -5,8 +5,6 @@ import generateQuestion from '../services/ChatGPT_API.js'
 
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z']
 
-// Habria que añadir api keys para que no cualquiera pueda acceder a la api
-
 questionRouter.get('/', async (request, response) => {
 	const questions = await Question.find({})
 	response.json(questions)
@@ -47,6 +45,9 @@ questionRouter.get('/solo',async (request, response) => {
 })
 
 questionRouter.get('/generate', async (request, response) =>{
+	console.log(request.query.letter)
+	console.log(request.query.example)
+	console.log(request.query.theme)
 	const question = await generateQuestion(request.query.letter, request.query.theme, request.query.example)
 	response.json(question)
 })
@@ -54,6 +55,7 @@ questionRouter.get('/generate', async (request, response) =>{
 questionRouter.post('/questions', async (request, response) => {
 	const questions = request.body
 	let added = []
+
 	for(const key in questions){
 		const repeatedQuestion = await Question.findOne({word: questions[key].word})
 		if(repeatedQuestion == null){
