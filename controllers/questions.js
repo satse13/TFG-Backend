@@ -44,10 +44,7 @@ questionRouter.get('/solo',async (request, response) => {
 	response.json(result)
 })
 
-questionRouter.get('/generate', async (request, response) =>{
-	console.log(request.query.letter)
-	console.log(request.query.example)
-	console.log(request.query.theme)
+questionRouter.get('/generate', async (request, response) => {
 	const question = await generateQuestion(request.query.letter, request.query.theme, request.query.example)
 	response.json(question)
 })
