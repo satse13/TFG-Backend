@@ -1,12 +1,13 @@
 import config from './utils/config.js';
 import express from 'express';
 import 'express-async-errors';
-const app = express();
 import cors from 'cors';
 import middleware from './utils/middleware.js';
 import logger from './utils/logger.js';
 import mongoose from 'mongoose';
 import questionRouter from './controllers/questions.js';
+
+const app = express();
 
 mongoose.set('strictQuery', false)
 
