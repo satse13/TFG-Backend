@@ -1,5 +1,6 @@
 import Question from '../models/question.js'
 import OpenAI from 'openai'
+import axios from 'axios'
 
 const openai = new OpenAI({
 	apiKey: process.env.API_KEY // This is also the default, can be omitted
@@ -50,13 +51,12 @@ const getResponse = async (letra, promptPedirPalabra, ejemploSalidaPalabra) => {
 
 
 	//********************************************//
-	//Este fragmento de código habrá que ponerlo en un IF porque para personas/monumentos/etc no sirve
-	//Vemos si existe en la RAE
+	//Vemos si existe en Wikipedia
 	palabra = palabra.trim()
-	let apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + palabra
-	let respuesta  = await fetch(apiUrl)
+	let apiUrl = 'https://en.wikipedia.org/w/rest.php/v1/search/page?q=' + palabra
+	let respuesta  = await axios.get(apiUrl)
 
-	if(!respuesta.ok){
+	if(!respuesta.data.pages.length){
 		console.log('NO está en el inglés')
 		return {
 			word: palabra,

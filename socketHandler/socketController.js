@@ -1,5 +1,5 @@
 import socketio from 'socket.io';
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 
 export default server => {
   const io = socketio.listen(server);
