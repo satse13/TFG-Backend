@@ -6,12 +6,6 @@ const openai = new OpenAI({
 	apiKey: process.env.API_KEY // This is also the default, can be omitted
 })
 
-let descripcion
-let promptPedirPregunta
-let ejemploSalidaPregunta
-let promptPedirDesc
-let ejemploSalidaDesc
-
 //Función para llamar a la API
 const llamadaAPI = async (promptUser, promptAssistant, tokens, temperatura, modelo) => {
 	const llam = await openai.chat.completions.create({
@@ -49,12 +43,11 @@ const getResponse = async (letra, promptPedirPalabra, ejemploSalidaPalabra) => {
 	palabra = pal.contenido.toLowerCase()
 	console.log(palabra)
 
-
 	//********************************************//
 	//Vemos si existe en Wikipedia
 	palabra = palabra.trim()
-	let apiUrl = 'https://en.wikipedia.org/w/rest.php/v1/search/page?q=' + palabra
-	let respuesta  = await axios.get(apiUrl)
+	const apiUrl = 'https://en.wikipedia.org/w/rest.php/v1/search/page?q=' + palabra
+	const respuesta  = await axios.get(apiUrl)
 
 	if(!respuesta.data.pages.length){
 		console.log('NO está en el inglés')
@@ -100,9 +93,9 @@ const getResponse = async (letra, promptPedirPalabra, ejemploSalidaPalabra) => {
 }
 
 function borrarHastaPalabra(str, palabra) {
-	let strMinuscula = str.toLowerCase()
-	let palabraMinuscula = palabra.toLowerCase()
-	let indice = strMinuscula.indexOf(palabraMinuscula)
+	const strMinuscula = str.toLowerCase()
+	const palabraMinuscula = palabra.toLowerCase()
+	const indice = strMinuscula.indexOf(palabraMinuscula)
 	if (indice !== -1) {
 		return str.substring(indice+1 + palabra.length)
 	} else {
@@ -111,7 +104,7 @@ function borrarHastaPalabra(str, palabra) {
 }
 
 //Función para buscar definiciones que sean válidas
-const getDesc = async (palabra,promptPedirDesc, ejemploSalidaDesc) => {
+const getDesc = async (palabra, promptPedirDesc, ejemploSalidaDesc, descripcion, theme) => {
 	//Variables
 	let descValida = 'N'
 	let bucle = 0
@@ -130,11 +123,11 @@ const getDesc = async (palabra,promptPedirDesc, ejemploSalidaDesc) => {
 
 		descripcion = descripcion.trim()
 
-		let caracter = descripcion.charAt(0).toUpperCase()
+		const caracter = descripcion.charAt(0).toUpperCase()
 
 		descripcion = caracter + descripcion.substring(1)
 
-		let descMinus = descripcion.toLowerCase()
+		const descMinus = descripcion.toLowerCase()
 
 		console.log(descripcion)
 
@@ -147,15 +140,22 @@ const getDesc = async (palabra,promptPedirDesc, ejemploSalidaDesc) => {
 		}
 
 		//Si la definición no contiene la palabra, comprobar si es válida
-		let promptComprobarDefinición= 'Now: Answer yes or no:\nWord: ' + palabra + '\nDescription: ' + descripcion + '\nDoes the description accurately represent the provided word?'
-		let promptEjemploComprobarDefinición = 'Sí.'
+		let promptComprobarDefinición
+		if(theme == ''){
+			promptComprobarDefinición= 'Now: Answer yes or no:\nWord: ' + palabra + '\nDescription: ' + descripcion + '\nDoes the description accurately represent the provided word?'
+		}
+		else{
+			promptComprobarDefinición= 'Now: Answer yes or no:\nWord: ' + palabra + '\nDescription: ' + descripcion + '\nDoes the description accurately represent the provided word? Is the definition related with ' + theme + '?'
+			console.log("IN")
+		}
+		const promptEjemploComprobarDefinición = 'Sí.'
 
 		const comprobarDefinicion = await llamadaAPI(promptComprobarDefinición, promptEjemploComprobarDefinición, 2, 0.5, 'gpt-3.5-turbo')
 
 		console.log(comprobarDefinicion.contenido)
 
 		//Si la definición es válida, descValida = 'Y', si no, descValida = 'N'
-		let arraySoluciones = ['Sí', 'Si.', 'Yes.', 'Yes']
+		const arraySoluciones = ['Sí', 'Si.', 'Yes.', 'Yes']
 
 		if(arraySoluciones.indexOf(comprobarDefinicion.contenido) !== -1){ 
 			descValida = 'Y'
@@ -178,16 +178,16 @@ async function generateQuestion(letter, theme, example) {
 	let newQuestion
 	// eslint-disable-next-line no-constant-condition
 	while(true){
-		promptPedirPregunta = 'Generate only, without any unnecessary message and without punctuation, a word that exists in English, that starts with the letter '+ letter +' that is common and has to do with ' + theme + '.'
-		ejemploSalidaPregunta = example
-		descripcion = ''
+		const promptPedirPregunta = 'Generate only, without any unnecessary message and without punctuation, a word that exists in English, that starts with the letter '+ letter +' that is common and has to do with ' + theme + '.'
+		const ejemploSalidaPregunta = example
+		const descripcion = ''
 
-		let promptPal = await getResponse(letter, promptPedirPregunta, ejemploSalidaPregunta)
+		const promptPal = await getResponse(letter, promptPedirPregunta, ejemploSalidaPregunta)
 		if (promptPal.valida == 'N') continue
-		promptPedirDesc = 'Generate a definition of the word '+ promptPal.word +' in 20 words. Include essential information about its meaning and common use.'
-		ejemploSalidaDesc = ''
+		const promptPedirDesc = 'Generate a definition of the word '+ promptPal.word +' in 20 words. Include essential information about its meaning and common use.'
+		const ejemploSalidaDesc = ''
             
-		let promptDef = await getDesc(promptPal.word,promptPedirDesc, ejemploSalidaDesc)
+		const promptDef = await getDesc(promptPal.word,promptPedirDesc, ejemploSalidaDesc, descripcion, theme)
 		if (promptDef.valida == 'N') continue    
 
 		// Crea una instancia del modelo y guarda en la base de datos
