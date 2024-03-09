@@ -6,10 +6,6 @@ const openai = new OpenAI({
 	apiKey: process.env.API_KEY
 })
 
-const famousExampleInfo = 'Name of a renowned Chinese pianist, who has dazzled audiences worldwide with his virtuosic performances characterized by exquisite sensitivity and technical brilliance.' + 
-						  'He gained fame for his interpretations of Chopin\'s works, winning the prestigious Chopin Piano Competition in 2000. He continues to captivate listeners with his dynamic' + 
-						  'and emotionally resonant renditions.'
-
 //Función para llamar a la API
 const llamadaAPI = async (promptUser, promptAssistant, tokens, temperatura, modelo) => {
 	const llam = await openai.chat.completions.create({
@@ -62,8 +58,6 @@ const getWord = async (letra, promptPedirPalabra, ejemploSalidaPalabra) => {
 	else{
 		console.log('SI está en el inglés')
 	}
-    
-	//********************************************//
 
 	//Si no contiene la letra, error y salir
 	if(!palabra.includes(letra)){
@@ -175,7 +169,7 @@ const borrarHastaPalabra = (str, palabra) => {
 }
 
 //Función para buscar palabras que sean válidas
-const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra) => {
+const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) => {
 	//Variables
 	let valido = 'N'
 	let empiezaCon = ''
@@ -204,6 +198,23 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra) => {
 	}
 	else{
 		console.log('SI aparece en wikipedia')
+	}
+
+	let iterations = 0;
+	for(const key in respuesta.data.pages){
+		if(respuesta.data.pages[key].excerpt.includes(theme)){
+			break;
+		}
+		iterations++;
+	}
+	if(iterations === respuesta.data.pages.length){
+		console.log('Error: No relacionado con '+ theme)
+		return {
+			word: nombre + ' ' + apellido,
+			fullName: nombre +  ' ' + apellido,
+			empieza: empiezaCon,
+			valida: valido
+		}
 	}
     
 	//********************************************//
@@ -321,14 +332,14 @@ async function generateQuestion(letter, theme, example) {
 		}
 		else{
 			const promptPedirFamoso = 'Give me the name and surname of a famous individual whose career is related with ' + theme + '. The name or surname must start with ' + letter + '. Give only this two words.'
-			const famousStruct = await getFamous(letter, promptPedirFamoso, '')
+			const famousStruct = await getFamous(letter, promptPedirFamoso, '', theme)
 			if (famousStruct.valida == 'N'){
 				iterations++
 				continue
 			}
 
 			const promptPedirInfo = 'Give me a question about ' + famousStruct.fullName + '. The answer of the question must be ' + famousStruct.word
-			const infoStruct = await getInfo(famousStruct.word ,promptPedirInfo, famousExampleInfo, theme)
+			const infoStruct = await getInfo(famousStruct.word ,promptPedirInfo, '', theme)
 			if (infoStruct.valida == 'N'){
 				iterations++
 				continue  
