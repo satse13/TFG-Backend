@@ -46,7 +46,7 @@ questionRouter.get('/solo',async (request, response) => {
 
 questionRouter.get('/generate', async (request, response) => {
 	const question = await generateQuestion(request.query.letter, request.query.theme, request.query.example)
-	const repeatedQuestion = await Question.findOne({word: question.word})
+	/*const repeatedQuestion = await Question.findOne({word: question.word})
 	if(repeatedQuestion == null){
 		question.save()
 		.then(() => {
@@ -58,7 +58,7 @@ questionRouter.get('/generate', async (request, response) => {
 	}
 	else{
 		console.log('Elemento repetido y no añadido')
-	}
+	}*/
 	response.json(question)
 })
 
