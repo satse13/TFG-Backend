@@ -285,7 +285,8 @@ const getInfo = async (palabra, promptPedirInfo, ejemploSalidaInfo, theme) => {
 		const informacion = await llamadaAPI(promptPedirInfo, ejemploSalidaInfo, 100, 0.5, 'gpt-3.5-turbo')
 
 		info = informacion.contenido
-        
+		
+		info = borrarDesdePalabra(info, '?')
 		console.log(info)
 
 		//Si la definición contiene la palabra, error y volver a pedir
@@ -302,6 +303,17 @@ const getInfo = async (palabra, promptPedirInfo, ejemploSalidaInfo, theme) => {
 	return {
 		info: info,
 		valida: infoValida 
+	}
+}
+
+const borrarDesdePalabra = (str, palabra) => {
+	const strMinuscula = str.toLowerCase()
+	const palabraMinuscula = palabra.toLowerCase()
+	const indice = strMinuscula.indexOf(palabraMinuscula)
+	if (indice !== -1) {
+		return str.substring(0, indice + 1)
+	} else {
+		return str
 	}
 }
 
