@@ -200,13 +200,18 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) 
 		console.log('SI aparece en wikipedia')
 	}
 
+	//Comprobar si tiene la tema en la wikipedia
+	//Por ahora comentado ya que si se pones soccer de tema, alguans paginas wikipedia puede aparecer football
+	//en vez de soccer y no dar la respuesta por valida
+	/*
 	let iterations = 0;
 	for(const key in respuesta.data.pages){
-		if(respuesta.data.pages[key].excerpt.includes(theme)){
+		if(respuesta.data.pages[key].excerpt.toLowerCase().includes(theme.toLowerCase())){
 			break;
 		}
 		iterations++;
-	}
+	}*/
+
 	if(iterations === respuesta.data.pages.length){
 		console.log('Error: No relacionado con '+ theme)
 		return {
@@ -304,7 +309,7 @@ async function generateQuestion(letter, theme, example) {
 	let newQuestion
 	let iterations = 0
 	while(true){
-		if(iterations < 3) {
+		if(iterations < 0) {
 			const promptPedirPregunta = 'Generate only, without any unnecessary message and without punctuation, a word that exists in English, that starts with the letter '+ letter +' that is common and has to do with ' + theme + '.'
 			const palStruct = await getWord(letter, promptPedirPregunta, example)
 			if (palStruct.valida == 'N'){
@@ -338,7 +343,7 @@ async function generateQuestion(letter, theme, example) {
 				continue
 			}
 
-			const promptPedirInfo = 'Give me a question about ' + famousStruct.fullName + '. The answer of the question must be ' + famousStruct.word
+			const promptPedirInfo = 'Give me a question of 30 words about ' + famousStruct.fullName + '. The question must contain information about his goals to avoid confusion. The answer of the question must be ' + famousStruct.word
 			const infoStruct = await getInfo(famousStruct.word ,promptPedirInfo, '', theme)
 			if (infoStruct.valida == 'N'){
 				iterations++
