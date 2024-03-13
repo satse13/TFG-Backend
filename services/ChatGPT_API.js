@@ -210,7 +210,7 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) 
 			break;
 		}
 		iterations++;
-	}*/
+	}
 
 	if(iterations === respuesta.data.pages.length){
 		console.log('Error: No relacionado con '+ theme)
@@ -220,7 +220,7 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) 
 			empieza: empiezaCon,
 			valida: valido
 		}
-	}
+	}*/
     
 	//********************************************//
 	//Si no contiene la letra, error y salir
