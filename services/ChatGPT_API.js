@@ -199,28 +199,6 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) 
 	else{
 		console.log('SI aparece en wikipedia')
 	}
-
-	//Comprobar si tiene la tema en la wikipedia
-	//Por ahora comentado ya que si se pones soccer de tema, alguans paginas wikipedia puede aparecer football
-	//en vez de soccer y no dar la respuesta por valida
-	/*
-	let iterations = 0;
-	for(const key in respuesta.data.pages){
-		if(respuesta.data.pages[key].excerpt.toLowerCase().includes(theme.toLowerCase())){
-			break;
-		}
-		iterations++;
-	}
-
-	if(iterations === respuesta.data.pages.length){
-		console.log('Error: No relacionado con '+ theme)
-		return {
-			word: nombre + ' ' + apellido,
-			fullName: nombre +  ' ' + apellido,
-			empieza: empiezaCon,
-			valida: valido
-		}
-	}*/
     
 	//********************************************//
 	//Si no contiene la letra, error y salir
@@ -293,11 +271,29 @@ const getInfo = async (palabra, promptPedirInfo, ejemploSalidaInfo, theme) => {
 		if(info.includes(palabra)){
 			console.log('Error: La definición contiene la palabra ' + palabra)
 			bucle++
-			//Aqui puedo cambiar el prompt para que me de una definición sin la palabra
 			continue
 		}
 
-		infoValida = 'Y'
+		const promptComprobarInfo = 'Answer yes or no. Does this question give accurately information about ' + palabra +'? Is ' + palabra + '\'s work related with ' + theme
+									+ '? Is the answer to this question ' + palabra + '?\nQuestion: ' + info + '\nAnswer: ' + palabra
+		const promptEjemploComprobarInfo  = 'Sí.'
+
+		console.log(promptComprobarInfo)
+		const comprobarDefinicion = await llamadaAPI(promptComprobarInfo, promptEjemploComprobarInfo , 2, 0.5, 'gpt-3.5-turbo')
+
+		console.log(comprobarDefinicion.contenido)
+
+		//Si la definición es válida, descValida = 'Y', si no, descValida = 'N'
+		const arraySoluciones = ['Sí', 'Si.', 'Yes.', 'Yes']
+
+		if(arraySoluciones.indexOf(comprobarDefinicion.contenido) !== -1){ 
+			infoValida = 'Y'
+			console.log('Palabra válida')
+		}
+		else{
+			infoValida = 'N'
+			bucle++
+		}
 	} 
 
 	return {
@@ -321,7 +317,7 @@ async function generateQuestion(letter, theme, example) {
 	let newQuestion
 	let iterations = 0
 	while(true){
-		if(iterations < 0) {
+		if(iterations < 3) {
 			const promptPedirPregunta = 'Generate only, without any unnecessary message and without punctuation, a word that exists in English, that starts with the letter '+ letter +' that is common and has to do with ' + theme + '.'
 			const palStruct = await getWord(letter, promptPedirPregunta, example)
 			if (palStruct.valida == 'N'){
@@ -355,7 +351,7 @@ async function generateQuestion(letter, theme, example) {
 				continue
 			}
 
-			const promptPedirInfo = 'Give me a question of 30 words about ' + famousStruct.fullName + '. The question must contain information about his goals to avoid confusion. The answer of the question must be ' + famousStruct.word
+			const promptPedirInfo = 'Give me a question of 30 words about ' + famousStruct.fullName + '. The answer of the question must be ' + famousStruct.word
 			const infoStruct = await getInfo(famousStruct.word ,promptPedirInfo, '', theme)
 			if (infoStruct.valida == 'N'){
 				iterations++
