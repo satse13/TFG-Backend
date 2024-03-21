@@ -251,7 +251,7 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) 
 }
 
 //Función para buscar definiciones que sean válidas
-const getInfo = async (palabra, promptPedirInfo, ejemploSalidaInfo, theme) => {
+const getInfo = async (palabra, fullName, promptPedirInfo, theme) => {
 	//Variables
 	let info
 	let infoValida = 'N'
@@ -260,7 +260,7 @@ const getInfo = async (palabra, promptPedirInfo, ejemploSalidaInfo, theme) => {
 	//Bucle para pedir definiciones hasta que sea válida
 	while(infoValida == 'N' && bucle < 3){
 		//Pedir definición
-		const informacion = await llamadaAPI(promptPedirInfo, ejemploSalidaInfo, 100, 0.5, 'gpt-3.5-turbo')
+		const informacion = await llamadaAPI(promptPedirInfo, '', 100, 0.5, 'gpt-3.5-turbo')
 
 		info = informacion.contenido
 		
@@ -274,8 +274,8 @@ const getInfo = async (palabra, promptPedirInfo, ejemploSalidaInfo, theme) => {
 			continue
 		}
 
-		const promptComprobarInfo = 'Answer yes or no. Does this question give accurately information about ' + palabra +'? Is ' + palabra + '\'s work related with ' + theme
-									+ '? Is the answer to this question ' + palabra + '?\nQuestion: ' + info + '\nAnswer: ' + palabra
+		const promptComprobarInfo = 'Answer yes or no. Does this question give accurately information about ' + fullName +'? Is ' + fullName + '\'s work related with ' + theme
+									+ '? Is the answer to this question ' + palabra + '?\nQuestion: ' + info + '\n'
 		const promptEjemploComprobarInfo  = 'Sí.'
 
 		console.log(promptComprobarInfo)
@@ -352,7 +352,7 @@ async function generateQuestion(letter, theme, example) {
 			}
 
 			const promptPedirInfo = 'Give me a question of 30 words about ' + famousStruct.fullName + '. The answer of the question must be ' + famousStruct.word
-			const infoStruct = await getInfo(famousStruct.word ,promptPedirInfo, '', theme)
+			const infoStruct = await getInfo(famousStruct.word ,famousStruct.fullName, promptPedirInfo, theme)
 			if (infoStruct.valida == 'N'){
 				iterations++
 				continue  
