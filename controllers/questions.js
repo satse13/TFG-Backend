@@ -2,8 +2,14 @@ import { Router } from 'express';
 const questionRouter = Router();
 import Question from '../models/question.js'
 import generateQuestion from '../services/ChatGPT_API.js'
+const OpenAI = require('openai');
 
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z']
+
+const dbURI =  process.env.MONGODB_URI;
+const openai = new OpenAI({
+    apiKey: process.env.API_KEY 
+});
 
 questionRouter.get('/', async (request, response) => {
 	const questions = await Question.find({})
@@ -61,5 +67,69 @@ questionRouter.get('/generate', async (request, response) => {
 	}*/
 	response.json(question)
 })
+
+questionRouter.post('/check',async (request, response) => {
+	let result
+	const {solucionReal, solucionPropuesta, definicion} = request.body //def
+	let apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + solucionPropuesta
+
+	const respuesta  = await fetch(apiUrl)
+	if(!respuesta.ok){
+		result = 2
+		
+	}
+	else{
+		let fin = await getResponse("Answer me only with 1 if yes and 0 if not: Is the word "+solucionPropuesta+" a synonym for the word '"+ solucionReal+"' or a meaning for the following definition: "+ definicion +"?", "1");
+		if (fin == 1) result = 1
+		else result = 2
+		
+	}
+	response.send(result)
+})
+
+//Función para llamar a la API de ChatGPT
+const llamadaAPI = async (promptUser, promptAssistant, tokens, temperatura, modelo) => {
+    const llam = await openai.chat.completions.create({
+        model: modelo,
+        temperature: temperatura,
+        messages: [
+          {
+            role: 'user',
+            content: promptUser,
+          },
+          {
+            role: 'assistant',
+            content: promptAssistant,
+          },
+        ],
+        max_tokens: tokens,
+    });
+    return {
+        contenido: llam.choices[0].message.content
+    }
+}
+
+
+
+//Función para preguntar a ChatGPT si la palabra sirve o no
+const getResponse = async (promptUser, ejemploSalida) => {
+
+    //Pedir la palabra
+    const pal = await llamadaAPI(promptUser, ejemploSalida, 2, 0.5, "gpt-3.5-turbo");
+    
+    palabra = pal.contenido.toLowerCase();
+    console.log(palabra);
+
+    
+
+    if(palabra == 1){ 
+        return 1
+    }
+    else{
+        return 2
+    }
+};
+
+
 
 export default questionRouter
