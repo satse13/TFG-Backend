@@ -1,16 +1,17 @@
 import app from './app.js'
 import config from './utils/config.js'
 import logger from './utils/logger.js'
-import http from 'http';
-import { socketHandler } from './socketHandler/index.js';
+import { Server } from "socket.io";
+import { createServer } from 'http'
+import socketHandler from './services/socketHandler.js';
 
-const server = http.createServer(app);
-socketHandler(server);
+const server = createServer(app);
+const io = new Server(server);
 
-app.listen(config.PORT, () => {
+socketHandler(io);
+
+server.listen(config.PORT, () => {
 	logger.info(`Http server running on port ${config.PORT}`)
 })
 
-server.listen(config.PORT + 1, () => {
-	logger.info(`Socketio initialised! on port ${config.PORT + 1}`)
-});
+	
