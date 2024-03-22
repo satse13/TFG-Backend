@@ -215,7 +215,8 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) 
 	
 		return {
 			word: nombre,
-			fullName: nombre +  ' ' + apellido,
+			nombre: nombre,
+			apellido: apellido,
 			empieza: empiezaCon,
 			valida: valido
 		}
@@ -234,7 +235,8 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) 
 	
 		return {
 			word: apellido,
-			fullName: nombre +  ' ' + apellido,
+			nombre: nombre,
+			apellido: apellido,
 			empieza: empiezaCon,
 			valida: valido
 		}
@@ -244,7 +246,8 @@ const getFamous = async (letra, promptPedirFamoso, ejemploSalidaPalabra, theme) 
         
 	return {
 		word: nombre + ' ' + apellido,
-		fullName: nombre +  ' ' + apellido,
+		nombre: nombre,
+		apellido: apellido,
 		empieza: empiezaCon,
 		valida: valido
 	}
@@ -351,18 +354,24 @@ async function generateQuestion(letter, theme, example) {
 				continue
 			}
 
-			const promptPedirInfo = 'Give me a question of 30 words about ' + famousStruct.fullName + '. The answer of the question must be ' + famousStruct.word
-			const infoStruct = await getInfo(famousStruct.word ,famousStruct.fullName, promptPedirInfo, theme)
+			if(famousStruct.word.includes('.')){
+				//TODO comunicar a ChatGPT que de el nombre
+				continue
+			}
+			const fullName = famousStruct.nombre + ' ' + famousStruct.apellido
+			const promptPedirInfo = 'Give me a question of 30 words about ' + fullName  + '. The answer of the question must be ' + famousStruct.word
+			const infoStruct = await getInfo(famousStruct.word, fullName, promptPedirInfo, theme)
 			if (infoStruct.valida == 'N'){
 				iterations++
 				continue  
 			}   
 
 			// Crea una instancia del modelo y guarda en la base de datos
+			const descripcion = infoStruct.info + ' Give the ' + ((famousStruct.word === famousStruct.nombre) ? 'name' : 'surname')
 			newQuestion = new Question({
 				letter: letter,
 				word: famousStruct.word,
-				description: infoStruct.info,
+				description: descripcion,
 				startsWith: famousStruct.empieza,
 				Idioma: 'Eng'
 			})
