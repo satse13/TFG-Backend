@@ -76,7 +76,6 @@ questionRouter.post('/check',async (request, response) => {
 	const respuesta  = await fetch(apiUrl)
 	if(!respuesta.ok){
 		result = 2
-		
 	}
 	else{
 		let fin = await getResponse("Answer me only with 1 if yes and 0 if not: Is the word "+solucionPropuesta+" a synonym for the word '"+ solucionReal+"' or a meaning for the following definition: "+ definicion +"?", "1");
@@ -109,18 +108,13 @@ const llamadaAPI = async (promptUser, promptAssistant, tokens, temperatura, mode
     }
 }
 
-
-
 //Función para preguntar a ChatGPT si la palabra sirve o no
 const getResponse = async (promptUser, ejemploSalida) => {
-
     //Pedir la palabra
     const pal = await llamadaAPI(promptUser, ejemploSalida, 2, 0.5, "gpt-3.5-turbo");
     
     palabra = pal.contenido.toLowerCase();
     console.log(palabra);
-
-    
 
     if(palabra == 1){ 
         return 1
@@ -129,7 +123,5 @@ const getResponse = async (promptUser, ejemploSalida) => {
         return 2
     }
 };
-
-
 
 export default questionRouter
