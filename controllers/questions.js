@@ -71,7 +71,6 @@ questionRouter.get('/generate', async (request, response) => {
 questionRouter.post('/check',async (request, response) => {
 	let result
 	const {solucionReal, solucionPropuesta, definicion} = request.body //def
-	console.log(solucionReal)
 	let apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + solucionPropuesta
 
 	const respuesta  = await fetch(apiUrl)
