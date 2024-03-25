@@ -2,7 +2,7 @@ import { Router } from 'express';
 const questionRouter = Router();
 import Question from '../models/question.js'
 import generateQuestion from '../services/ChatGPT_API.js'
-const OpenAI = require('openai');
+import OpenAI from 'openai'
 
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z']
 
@@ -71,6 +71,7 @@ questionRouter.get('/generate', async (request, response) => {
 questionRouter.post('/check',async (request, response) => {
 	let result
 	const {solucionReal, solucionPropuesta, definicion} = request.body //def
+	console.log(solucionReal)
 	let apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + solucionPropuesta
 
 	const respuesta  = await fetch(apiUrl)
