@@ -81,6 +81,14 @@ questionRouter.post('/check',async (request, response) => {
 	response.send(String(result))
 })
 
+questionRouter.post('/answerBot',async (request, response) => {
+	let result
+	const {firstPart, secondPart, letter} = request.body
+	
+	result = await getResponse("Give me the answer for this in just one word : "+firstPart + secondPart, "Apple");
+	response.send(String(result))
+})
+
 //Función para llamar a la API de ChatGPT
 const llamadaAPI = async (promptUser, promptAssistant, tokens, temperatura, modelo) => {
     const llam = await openai.chat.completions.create({
