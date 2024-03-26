@@ -70,20 +70,15 @@ questionRouter.get('/generate', async (request, response) => {
 
 questionRouter.post('/check',async (request, response) => {
 	let result
-	const {solucionReal, solucionPropuesta, definicion} = request.body //def
-	let apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + solucionPropuesta
-
+	const {param1, param2, param3} = request.body //real solution, proposed solution, definition
+	let apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + param2
+	
 	const respuesta  = await fetch(apiUrl)
-	if(!respuesta.ok){
+	if(!respuesta.ok)
 		result = 2
-	}
-	else{
-		let fin = await getResponse("Answer me only with 1 if yes and 0 if not: Is the word "+solucionPropuesta+" a synonym for the word '"+ solucionReal+"' or a meaning for the following definition: "+ definicion +"?", "1");
-		if (fin == 1) result = 1
-		else result = 2
-		
-	}
-	response.send(result)
+	else
+		result = await getResponse("Answer me only with 1 if yes and 2 if not: Is the word "+param2+" a synonym for the word '"+ param1+"' or a meaning for the following definition: "+ param3 +"?", "1");	
+	response.send(String(result))
 })
 
 //Función para llamar a la API de ChatGPT
@@ -113,7 +108,7 @@ const getResponse = async (promptUser, ejemploSalida) => {
     //Pedir la palabra
     const pal = await llamadaAPI(promptUser, ejemploSalida, 2, 0.5, "gpt-3.5-turbo");
     
-    palabra = pal.contenido.toLowerCase();
+    let palabra = pal.contenido.toLowerCase();
     console.log(palabra);
 
     if(palabra == 1){ 
