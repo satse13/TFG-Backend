@@ -3,7 +3,7 @@ const questionRouter = Router();
 import Question from '../models/question.js'
 import generateQuestion from '../services/ChatGPT_API.js'
 import OpenAI from 'openai'
-import {validResponsePrompt, getBotResponsePrompt} from './prompts.js'
+import {validResponsePrompt, getBotResponsePrompt, assistantBotPrompt} from './prompts.js'
 
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z']
 
@@ -89,7 +89,7 @@ questionRouter.post('/answerBot',async (request, response) => {
 	let result
 	const {firstPart, secondPart, letter} = request.body
 	
-	result = await geBotResponse(getBotResponsePrompt(firstPart, secondPart), "answer only with the word which has to oficially exist in the dictionary and be in english");
+	result = await geBotResponse(getBotResponsePrompt(firstPart, secondPart), assistantBotPrompt);
 	console.log('--->Bot dice:', result)
 	response.send(String(result))
 })

@@ -8,3 +8,5 @@ export const getBotResponsePrompt = (firstPart, secondPart) => {
     return `Provide a real english word that ${firstPart}
     and means: ${secondPart}`
 }
+
+export const assistantBotPrompt = `"provide only one word which has to exist in the dictionary and be in english"`
