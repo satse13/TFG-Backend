@@ -3,6 +3,7 @@ const questionRouter = Router();
 import Question from '../models/question.js'
 import generateQuestion from '../services/ChatGPT_API.js'
 import OpenAI from 'openai'
+import {validResponsePrompt, getBotResponsePrompt} from './prompts.js'
 
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z']
 
@@ -74,10 +75,13 @@ questionRouter.post('/check',async (request, response) => {
 	let apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + param2
 	
 	const respuesta  = await fetch(apiUrl)
-	if(!respuesta.ok)
+	if(!respuesta.ok){
 		result = 2
+		console.log('--->No existe la palabra')
+	}
 	else
-		result = await getResponse("Answer me only with 1 if yes and 2 if not: Is the word "+param2+" a synonym for the word '"+ param1+"' or a meaning for the following definition: "+ param3 +"?", "1");	
+		result = await getResponse(validResponsePrompt(param1, param2, param3) ,"1");	
+	console.log('--->Api dice:', result)
 	response.send(String(result))
 })
 
@@ -85,9 +89,19 @@ questionRouter.post('/answerBot',async (request, response) => {
 	let result
 	const {firstPart, secondPart, letter} = request.body
 	
-	result = await getResponse("Give me the answer for this in just one word : "+firstPart + secondPart, "Apple");
+	result = await geBotResponse(getBotResponsePrompt(firstPart, secondPart), "answer only with the word which has to oficially exist in the dictionary and be in english");
+	console.log('--->Bot dice:', result)
 	response.send(String(result))
 })
+
+//Funcion para obtener una respuesta de ChatGPT
+const geBotResponse = async (promptUser, ejemploSalida) => {
+	//Pedir la palabra
+	const pal = await llamadaAPI(promptUser, ejemploSalida, 3, 0.3, "gpt-3.5-turbo");
+	let palabra = pal.contenido.toLowerCase();
+
+	return palabra;
+}
 
 //Función para llamar a la API de ChatGPT
 const llamadaAPI = async (promptUser, promptAssistant, tokens, temperatura, modelo) => {
@@ -117,7 +131,6 @@ const getResponse = async (promptUser, ejemploSalida) => {
     const pal = await llamadaAPI(promptUser, ejemploSalida, 2, 0.5, "gpt-3.5-turbo");
     
     let palabra = pal.contenido.toLowerCase();
-    console.log(palabra);
 
     if(palabra == 1){ 
         return 1
