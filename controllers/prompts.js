@@ -9,4 +9,4 @@ export const getBotResponsePrompt = (firstPart, secondPart) => {
     and means: ${secondPart}`
 }
 
-export const assistantBotPrompt = `"provide only one word which has to exist in the dictionary and be in english"`
+export const assistantBotPrompt = `provide only one word which has to exist in the dictionary and be in english`
